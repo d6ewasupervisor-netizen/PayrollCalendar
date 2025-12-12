@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Payroll Calendar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Red+Hat+Display:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00b894;
+            --primary-dark: #00916e;
+            --secondary: #6c5ce7;
+            --accent: #fdcb6e;
+            --danger: #ff7675;
+            --bg-dark: #0a0e27;
+            --bg-card: #1a1f3a;
+            --text-light: #ffffff;
+            --text-muted: #a0a8c8;
+            --highlight: #74b9ff;
+        }
+
+        body {
+            font-family: 'Red Hat Display', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d3561 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(108, 92, 231, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 184, 148, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(253, 203, 110, 0.05) 0%, transparent 50%);
+            animation: gradientShift 20s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-5%, -5%) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Righteous', cursive;
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 40px rgba(0, 184, 148, 0.3);
+            letter-spacing: -2px;
+        }
+
+        .current-info {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 2px solid rgba(0, 184, 148, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .payday-value {
+            color: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Red Hat Display', sans-serif;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: var(--primary);
+            color: var(--text-light);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.3);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: var(--text-muted);
+            color: var(--text-muted);
+        }
+
+        .nav-info {
+            font-family: 'Righteous', cursive;
+            font-size: 2rem;
+            color: var(--primary);
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .limit-message {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 118, 117, 0.2);
+            border: 2px solid var(--danger);
+            border-radius: 15px;
+            color: var(--danger);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .limit-message.show {
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .month-section {
+            margin-bottom: 3rem;
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .month-header {
+            display: none;
+        }
+
+        .weekday-header {
+            background: var(--bg-card);
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .day-cell {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .day-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(108, 92, 231, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .day-cell:hover::before {
+            opacity: 1;
+        }
+
+        .day-cell:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 184, 148, 0.3);
+        }
+
+        .day-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+            position: relative;
+            z-index: 1;
+        }
+
+        .day-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .empty-cell {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .empty-cell:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .current-period {
+            background: linear-gradient(135deg, rgba(0, 184, 148, 0.25), rgba(0, 145, 110, 0.25));
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.2);
+        }
+
+        .current-period::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .payday {
+            background: linear-gradient(135deg, rgba(253, 203, 110, 0.3), rgba(255, 118, 117, 0.3));
+            border-color: var(--accent);
+            animation: payDayFlash 2s ease-in-out infinite;
+            font-weight: 900;
+        }
+
+        .payday .day-number {
+            color: var(--accent);
+            font-size: 2rem;
+        }
+
+        .payday .day-label {
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes payDayFlash {
+            0%, 100% {
+                box-shadow: 0 0 30px rgba(253, 203, 110, 0.5), 0 10px 30px rgba(253, 203, 110, 0.3);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(253, 203, 110, 0.8), 0 15px 40px rgba(253, 203, 110, 0.5);
+                transform: scale(1.05);
+            }
+        }
+
+        .today {
+            border-color: var(--highlight);
+            position: relative;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 15px;
+            border: 2px solid rgba(0, 184, 148, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .legend-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .legend-box.period {
+            background: linear-gradient(135deg, rgba(0, 184, 148, 0.25), rgba(0, 145, 110, 0.25));
+            border-color: var(--primary);
+        }
+
+        .legend-box.payday {
+            background: linear-gradient(135deg, rgba(253, 203, 110, 0.3), rgba(255, 118, 117, 0.3));
+            border-color: var(--accent);
+        }
+
+        .legend-box.today {
+            background: var(--bg-card);
+            border-color: var(--highlight);
+        }
+
+        .legend-text {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .payday-arrow {
+            position: absolute;
+            top: -60px;
+            right: 0;
+            display: none;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .payday-arrow.show {
+            display: block;
+            animation: bounceArrowRight 0.6s ease-in-out 3, fadeOut 0.5s ease-in-out 2.5s forwards;
+        }
+
+        @keyframes bounceArrowRight {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
+
+        .arrow-svg {
+            width: 180px;
+            height: 60px;
+        }
+
+        .arrow-text {
+            font-family: 'Righteous', cursive;
+            font-size: 1.3rem;
+            fill: var(--accent);
+            font-weight: 900;
+        }
+
+        .arrow-path {
+            fill: var(--accent);
+            filter: drop-shadow(0 0 10px rgba(253, 203, 110, 0.5));
+        }
+
+        .navigation {
+            position: relative;
+        }
+
+        #nextBtn2 {
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .calendar-grid {
+                gap: 0.5rem;
+            }
+
+            .day-cell {
+                padding: 0.5rem;
+                min-height: 60px;
+            }
+
+            .day-number {
+                font-size: 1.2rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navigation {
+                gap: 1rem;
+            }
+
+            .nav-button {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .nav-info {
+                min-width: 150px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 2026 Payroll Calendar</h1>
+        </div>
+
+        <div class="current-info" id="currentInfo">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Today</div>
+                    <div class="info-value" id="todayDate">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Selected Period</div>
+                    <div class="info-value" id="periodRange">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Payday</div>
+                    <div class="info-value payday-value" id="nextPayday">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn">
+                <span>←</span> Previous
+            </button>
+            <div class="nav-info" id="navInfo"></div>
+            <button class="nav-button" id="nextBtn">
+                Next <span>→</span>
+            </button>
+        </div>
+
+        <div class="limit-message" id="limitMessage">
+            ⚠️ Sorry, due to size constraints you have reached the end of available data.
+        </div>
+
+        <div id="calendarContainer"></div>
+
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn2">
+                <span>←</span> Previous
+            </button>
+            <div class="nav-info" id="navInfo2"></div>
+            <button class="nav-button" id="nextBtn2">
+                Next <span>→</span>
+                <div class="payday-arrow" id="paydayArrow">
+                    <svg class="arrow-svg" viewBox="0 0 180 60">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" class="arrow-path" />
+                            </marker>
+                        </defs>
+                        <line x1="20" y1="30" x2="140" y2="30" stroke="#fdcb6e" stroke-width="4" marker-end="url(#arrowhead)" />
+                        <text x="50" y="20" class="arrow-text">Payday</text>
+                    </svg>
+                </div>
+            </button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box period"></div>
+                <div class="legend-text">Current Pay Period</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box payday"></div>
+                <div class="legend-text">Payday</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box today"></div>
+                <div class="legend-text">Today</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const payPeriods = [
+            {"payDate": "2025-12-19", "periodStart": "2025-12-01", "periodEnd": "2025-12-14"},
+            {"payDate": "2026-01-02", "periodStart": "2025-12-15", "periodEnd": "2025-12-28"},
+            {"payDate": "2026-01-16", "periodStart": "2025-12-29", "periodEnd": "2026-01-11"},
+            {"payDate": "2026-01-30", "periodStart": "2026-01-12", "periodEnd": "2026-01-25"},
+            {"payDate": "2026-02-13", "periodStart": "2026-01-26", "periodEnd": "2026-02-08"},
+            {"payDate": "2026-02-27", "periodStart": "2026-02-09", "periodEnd": "2026-02-22"},
+            {"payDate": "2026-03-13", "periodStart": "2026-02-23", "periodEnd": "2026-03-08"},
+            {"payDate": "2026-03-27", "periodStart": "2026-03-09", "periodEnd": "2026-03-22"},
+            {"payDate": "2026-04-10", "periodStart": "2026-03-23", "periodEnd": "2026-04-05"},
+            {"payDate": "2026-04-24", "periodStart": "2026-04-06", "periodEnd": "2026-04-19"},
+            {"payDate": "2026-05-08", "periodStart": "2026-04-20", "periodEnd": "2026-05-03"},
+            {"payDate": "2026-05-22", "periodStart": "2026-05-04", "periodEnd": "2026-05-17"},
+            {"payDate": "2026-06-05", "periodStart": "2026-05-18", "periodEnd": "2026-05-31"},
+            {"payDate": "2026-06-19", "periodStart": "2026-06-01", "periodEnd": "2026-06-14"},
+            {"payDate": "2026-07-03", "periodStart": "2026-06-15", "periodEnd": "2026-06-28"},
+            {"payDate": "2026-07-17", "periodStart": "2026-06-29", "periodEnd": "2026-07-12"},
+            {"payDate": "2026-07-31", "periodStart": "2026-07-13", "periodEnd": "2026-07-26"},
+            {"payDate": "2026-08-14", "periodStart": "2026-07-27", "periodEnd": "2026-08-09"},
+            {"payDate": "2026-08-28", "periodStart": "2026-08-10", "periodEnd": "2026-08-23"},
+            {"payDate": "2026-09-11", "periodStart": "2026-08-24", "periodEnd": "2026-09-06"},
+            {"payDate": "2026-09-25", "periodStart": "2026-09-07", "periodEnd": "2026-09-20"},
+            {"payDate": "2026-10-09", "periodStart": "2026-09-21", "periodEnd": "2026-10-04"},
+            {"payDate": "2026-10-23", "periodStart": "2026-10-05", "periodEnd": "2026-10-18"},
+            {"payDate": "2026-11-06", "periodStart": "2026-10-19", "periodEnd": "2026-11-01"},
+            {"payDate": "2026-11-20", "periodStart": "2026-11-02", "periodEnd": "2026-11-15"},
+            {"payDate": "2026-12-04", "periodStart": "2026-11-16", "periodEnd": "2026-11-29"},
+            {"payDate": "2026-12-18", "periodStart": "2026-11-30", "periodEnd": "2026-12-13"}
+        ];
+
+        // Extend pay periods backwards and forwards by a year using 14-day pattern
+        function extendPayPeriods() {
+            const extended = [...payPeriods];
+            
+            // Extend backwards from first period
+            let currentStart = new Date(payPeriods[0].periodStart + 'T00:00:00');
+            let currentEnd = new Date(payPeriods[0].periodEnd + 'T00:00:00');
+            let payDate = new Date(payPeriods[0].payDate + 'T00:00:00');
+            
+            // Go back 26 periods (approximately 1 year)
+            for (let i = 0; i < 26; i++) {
+                // Move back 14 days for the pay period
+                currentEnd = new Date(currentStart);
+                currentEnd.setDate(currentEnd.getDate() - 1);
+                currentStart = new Date(currentEnd);
+                currentStart.setDate(currentStart.getDate() - 13);
+                
+                // Pay date is typically 5 days after period end
+                payDate = new Date(currentEnd);
+                payDate.setDate(payDate.getDate() + 5);
+                
+                extended.unshift({
+                    payDate: payDate.toISOString().split('T')[0],
+                    periodStart: currentStart.toISOString().split('T')[0],
+                    periodEnd: currentEnd.toISOString().split('T')[0]
+                });
+            }
+            
+            // Extend forwards from last period
+            const lastPeriod = payPeriods[payPeriods.length - 1];
+            currentStart = new Date(lastPeriod.periodStart + 'T00:00:00');
+            currentEnd = new Date(lastPeriod.periodEnd + 'T00:00:00');
+            payDate = new Date(lastPeriod.payDate + 'T00:00:00');
+            
+            // Go forward 26 periods (approximately 1 year)
+            for (let i = 0; i < 26; i++) {
+                // Move forward 14 days
+                currentStart = new Date(currentEnd);
+                currentStart.setDate(currentStart.getDate() + 1);
+                currentEnd = new Date(currentStart);
+                currentEnd.setDate(currentEnd.getDate() + 13);
+                
+                // Pay date is typically 5 days after period end
+                payDate = new Date(currentEnd);
+                payDate.setDate(payDate.getDate() + 5);
+                
+                extended.push({
+                    payDate: payDate.toISOString().split('T')[0],
+                    periodStart: currentStart.toISOString().split('T')[0],
+                    periodEnd: currentEnd.toISOString().split('T')[0]
+                });
+            }
+            
+            return extended;
+        }
+
+        const allPayPeriods = extendPayPeriods();
+
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        let currentOffset = 0; // 0 = current month, -1 = previous, +1 = next
+        const MIN_OFFSET = -12; // 1 year back
+        const MAX_OFFSET = 12;  // 1 year forward
+
+        function findCurrentPeriod(date) {
+            const dateStr = date.toISOString().split('T')[0];
+            for (let period of allPayPeriods) {
+                if (dateStr >= period.periodStart && dateStr <= period.periodEnd) {
+                    return period;
+                }
+            }
+            return null;
+        }
+
+        function isInCurrentPeriod(dateStr, currentPeriod) {
+            if (!currentPeriod) return false;
+            return dateStr >= currentPeriod.periodStart && dateStr <= currentPeriod.periodEnd;
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn2 = document.getElementById('prevBtn2');
+            const nextBtn2 = document.getElementById('nextBtn2');
+            const limitMsg = document.getElementById('limitMessage');
+            
+            prevBtn.disabled = currentOffset <= MIN_OFFSET;
+            nextBtn.disabled = currentOffset >= MAX_OFFSET;
+            prevBtn2.disabled = currentOffset <= MIN_OFFSET;
+            nextBtn2.disabled = currentOffset >= MAX_OFFSET;
+            
+            // Show limit message if at boundary
+            if ((currentOffset <= MIN_OFFSET && (prevBtn.dataset.clicked || prevBtn2.dataset.clicked)) || 
+                (currentOffset >= MAX_OFFSET && (nextBtn.dataset.clicked || nextBtn2.dataset.clicked))) {
+                limitMsg.classList.add('show');
+                setTimeout(() => {
+                    limitMsg.classList.remove('show');
+                    delete prevBtn.dataset.clicked;
+                    delete nextBtn.dataset.clicked;
+                    delete prevBtn2.dataset.clicked;
+                    delete nextBtn2.dataset.clicked;
+                }, 3000);
+            }
+        }
+
+        function createCalendar() {
+            const today = new Date();
+            let selectedPeriod = findCurrentPeriod(today);
+            const container = document.getElementById('calendarContainer');
+
+            function updateDisplay(period) {
+                selectedPeriod = period;
+                
+                // Update current info
+                document.getElementById('todayDate').textContent = formatDate(today.toISOString().split('T')[0]);
+                if (selectedPeriod) {
+                    document.getElementById('periodRange').textContent = 
+                        `${new Date(selectedPeriod.periodStart + 'T00:00:00').getMonth() + 1}/${new Date(selectedPeriod.periodStart + 'T00:00:00').getDate()} - ${new Date(selectedPeriod.periodEnd + 'T00:00:00').getMonth() + 1}/${new Date(selectedPeriod.periodEnd + 'T00:00:00').getDate()}`;
+                    document.getElementById('nextPayday').textContent = formatDate(selectedPeriod.payDate);
+                    
+                    // Check if payday is in the next month
+                    const currentDisplayMonth = today.getMonth() + currentOffset;
+                    const currentDisplayYear = today.getFullYear() + Math.floor((today.getMonth() + currentOffset) / 12);
+                    const normalizedMonth = ((currentDisplayMonth % 12) + 12) % 12;
+                    
+                    const paydayDate = new Date(selectedPeriod.payDate + 'T00:00:00');
+                    const paydayMonth = paydayDate.getMonth();
+                    const paydayYear = paydayDate.getFullYear();
+                    
+                    // Show arrow if payday is in next month
+                    if (paydayYear > currentDisplayYear || 
+                        (paydayYear === currentDisplayYear && paydayMonth > normalizedMonth)) {
+                        const arrow = document.getElementById('paydayArrow');
+                        arrow.classList.remove('show');
+                        // Force reflow to restart animation
+                        void arrow.offsetWidth;
+                        arrow.classList.add('show');
+                        
+                        // Remove after 3 seconds
+                        setTimeout(() => {
+                            arrow.classList.remove('show');
+                        }, 3000);
+                    }
+                }
+
+                // Update all day cells
+                document.querySelectorAll('.day-cell').forEach(cell => {
+                    const dateStr = cell.dataset.date;
+                    if (!dateStr) return;
+
+                    // Remove previous period/payday classes
+                    cell.classList.remove('current-period', 'payday');
+
+                    // Check if it's in selected period
+                    if (isInCurrentPeriod(dateStr, selectedPeriod)) {
+                        cell.classList.add('current-period');
+                    }
+
+                    // Check if it's the payday for selected period
+                    if (selectedPeriod && dateStr === selectedPeriod.payDate) {
+                        cell.classList.add('payday');
+                        // Update label to show PAYDAY
+                        const label = cell.querySelector('.day-label');
+                        if (label) label.textContent = '💰 PAYDAY';
+                    } else {
+                        // Reset label to day name
+                        const label = cell.querySelector('.day-label');
+                        const date = new Date(dateStr + 'T00:00:00');
+                        if (label) label.textContent = dayNames[date.getDay()];
+                    }
+                });
+            }
+
+            // Initial update
+            updateDisplay(selectedPeriod);
+
+            function renderCalendar() {
+                container.innerHTML = '';
+
+                // Show only one month based on offset
+                const date = new Date(today.getFullYear(), today.getMonth() + currentOffset, 1);
+                const year = date.getFullYear();
+                const month = date.getMonth();
+
+                {
+                    const monthSection = document.createElement('div');
+                    monthSection.className = 'month-section';
+
+                    const header = document.createElement('div');
+                    header.className = 'month-header';
+                    header.textContent = `${monthNames[month]} ${year}`;
+                    monthSection.appendChild(header);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'calendar-grid';
+
+                    // Add weekday headers
+                    dayNames.forEach(day => {
+                        const dayHeader = document.createElement('div');
+                        dayHeader.className = 'weekday-header';
+                        dayHeader.textContent = day;
+                        grid.appendChild(dayHeader);
+                    });
+
+                    // Get first day of month and number of days
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                    // Add empty cells for days before month starts
+                    for (let i = 0; i < firstDay; i++) {
+                        const emptyCell = document.createElement('div');
+                        emptyCell.className = 'day-cell empty-cell';
+                        grid.appendChild(emptyCell);
+                    }
+
+                    // Add day cells
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const date = new Date(year, month, day);
+                        const dateStr = date.toISOString().split('T')[0];
+                        
+                        const dayCell = document.createElement('div');
+                        dayCell.className = 'day-cell';
+                        dayCell.dataset.date = dateStr;
+
+                        // Check if it's today
+                        if (dateStr === today.toISOString().split('T')[0]) {
+                            dayCell.classList.add('today');
+                        }
+
+                        // Check if it's in current period
+                        if (isInCurrentPeriod(dateStr, selectedPeriod)) {
+                            dayCell.classList.add('current-period');
+                        }
+
+                        // Check if it's a payday
+                        if (selectedPeriod && dateStr === selectedPeriod.payDate) {
+                            dayCell.classList.add('payday');
+                        }
+
+                        // Add click handler
+                        dayCell.addEventListener('click', function() {
+                            const clickedPeriod = findCurrentPeriod(date);
+                            if (clickedPeriod) {
+                                updateDisplay(clickedPeriod);
+                            }
+                        });
+
+                        const dayNumber = document.createElement('div');
+                        dayNumber.className = 'day-number';
+                        dayNumber.textContent = day;
+
+                        const dayLabel = document.createElement('div');
+                        dayLabel.className = 'day-label';
+                        
+                        if (selectedPeriod && dateStr === selectedPeriod.payDate) {
+                            dayLabel.textContent = '💰 PAYDAY';
+                        } else {
+                            dayLabel.textContent = dayNames[date.getDay()];
+                        }
+
+                        dayCell.appendChild(dayNumber);
+                        dayCell.appendChild(dayLabel);
+                        grid.appendChild(dayCell);
+                    }
+
+                    monthSection.appendChild(grid);
+                    container.appendChild(monthSection);
+                }
+
+                updateNavigationButtons();
+                
+                // Update nav info with current month (both top and bottom)
+                const navInfo = document.getElementById('navInfo');
+                const navInfo2 = document.getElementById('navInfo2');
+                const monthYearText = `${monthNames[month]} ${year}`;
+                navInfo.textContent = monthYearText;
+                navInfo2.textContent = monthYearText;
+            }
+
+            // Navigation button handlers
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                if (currentOffset > MIN_OFFSET) {
+                    currentOffset -= 1;
+                    if (currentOffset < MIN_OFFSET) currentOffset = MIN_OFFSET;
+                    renderCalendar();
+                } else {
+                    this.dataset.clicked = 'true';
+                    updateNavigationButtons();
+                }
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                if (currentOffset < MAX_OFFSET) {
+                    currentOffset += 1;
+                    if (currentOffset > MAX_OFFSET) currentOffset = MAX_OFFSET;
+                    renderCalendar();
+                } else {
+                    this.dataset.clicked = 'true';
+                    updateNavigationButtons();
+                }
+            });
+
+            // Bottom navigation buttons (same functionality)
+            document.getElementById('prevBtn2').addEventListener('click', function() {
+                if (currentOffset > MIN_OFFSET) {
+                    currentOffset -= 1;
+                    if (currentOffset < MIN_OFFSET) currentOffset = MIN_OFFSET;
+                    renderCalendar();
+                } else {
+                    this.dataset.clicked = 'true';
+                    updateNavigationButtons();
+                }
+            });
+
+            document.getElementById('nextBtn2').addEventListener('click', function() {
+                if (currentOffset < MAX_OFFSET) {
+                    currentOffset += 1;
+                    if (currentOffset > MAX_OFFSET) currentOffset = MAX_OFFSET;
+                    renderCalendar();
+                } else {
+                    this.dataset.clicked = 'true';
+                    updateNavigationButtons();
+                }
+            });
+
+            // Initial render
+            renderCalendar();
+        }
+
+        // Initialize calendar on page load
+        createCalendar();
+    </script>
+</body>
+</html>
