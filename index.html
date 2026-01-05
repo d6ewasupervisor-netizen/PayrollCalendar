@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 Payroll Calendar</title>
+    <title>2026 Holiday and Payroll Calendar</title>
     <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Red+Hat+Display:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -23,6 +23,10 @@
             --text-light: #ffffff;
             --text-muted: #a0a8c8;
             --highlight: #74b9ff;
+            --holiday-full: #e74c3c;
+            --holiday-full-light: #ff6b6b;
+            --holiday-half: #9b59b6;
+            --holiday-half-light: #a855f7;
         }
 
         body {
@@ -376,6 +380,95 @@
             position: relative;
         }
 
+        .full-holiday {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.35), rgba(192, 57, 43, 0.35));
+            border-color: var(--holiday-full);
+            position: relative;
+        }
+
+        .full-holiday::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), transparent);
+            animation: holidayGlow 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes holidayGlow {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 15px rgba(231, 76, 60, 0.3); }
+            50% { opacity: 1; box-shadow: 0 0 25px rgba(231, 76, 60, 0.5); }
+        }
+
+        .full-holiday .day-number {
+            color: var(--holiday-full-light);
+        }
+
+        .full-holiday .day-label {
+            color: var(--holiday-full-light);
+            font-weight: 700;
+            font-size: 0.65rem;
+        }
+
+        .half-holiday {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.35), rgba(142, 68, 173, 0.35));
+            border-color: var(--holiday-half);
+            position: relative;
+        }
+
+        .half-holiday::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.15), transparent);
+            animation: halfHolidayPulse 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes halfHolidayPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        .half-holiday .day-number {
+            color: var(--holiday-half-light);
+        }
+
+        .half-holiday .day-label {
+            color: var(--holiday-half-light);
+            font-weight: 600;
+            font-size: 0.65rem;
+        }
+
+        .holiday-name {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            line-height: 1.1;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .full-holiday .holiday-name {
+            color: rgba(255, 107, 107, 0.9);
+        }
+
+        .half-holiday .holiday-name {
+            color: rgba(168, 85, 247, 0.9);
+        }
+
         .legend {
             display: flex;
             justify-content: center;
@@ -414,6 +507,16 @@
         .legend-box.today {
             background: var(--bg-card);
             border-color: var(--highlight);
+        }
+
+        .legend-box.full-holiday {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.35), rgba(192, 57, 43, 0.35));
+            border-color: var(--holiday-full);
+        }
+
+        .legend-box.half-holiday {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.35), rgba(142, 68, 173, 0.35));
+            border-color: var(--holiday-half);
         }
 
         .legend-text {
@@ -512,7 +615,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>💰 2026 Payroll Calendar</h1>
+            <h1>2026 Holiday and Payroll Calendar</h1>
         </div>
 
         <div class="current-info" id="currentInfo">
@@ -579,6 +682,14 @@
                 <div class="legend-text">Payday</div>
             </div>
             <div class="legend-item">
+                <div class="legend-box full-holiday"></div>
+                <div class="legend-text">Full Day Holiday</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box half-holiday"></div>
+                <div class="legend-text">Half Day (Early Release)</div>
+            </div>
+            <div class="legend-item">
                 <div class="legend-box today"></div>
                 <div class="legend-text">Today</div>
             </div>
@@ -615,6 +726,40 @@
             {"payDate": "2026-12-04", "periodStart": "2026-11-16", "periodEnd": "2026-11-29"},
             {"payDate": "2026-12-18", "periodStart": "2026-11-30", "periodEnd": "2026-12-13"}
         ];
+
+        // Full Paid Holidays for 2026
+        const fullHolidays = [
+            { date: "2026-01-01", name: "New Year's Day" },
+            { date: "2026-01-19", name: "MLK Day" },
+            { date: "2026-05-25", name: "Memorial Day" },
+            { date: "2026-06-19", name: "Juneteenth" },
+            { date: "2026-07-03", name: "Independence Day" },
+            { date: "2026-09-07", name: "Labor Day" },
+            { date: "2026-11-11", name: "Veteran's Day" },
+            { date: "2026-11-26", name: "Thanksgiving" },
+            { date: "2026-11-27", name: "Day After Thanksgiving" },
+            { date: "2026-12-24", name: "Christmas Eve" },
+            { date: "2026-12-25", name: "Christmas" }
+        ];
+
+        // Half Day (Early Release) Holidays for 2026
+        const halfHolidays = [
+            { date: "2026-05-22", name: "Early Release (Memorial Day)" },
+            { date: "2026-07-02", name: "Early Release (Independence Day)" },
+            { date: "2026-09-04", name: "Early Release (Labor Day)" },
+            { date: "2026-11-25", name: "Early Release (Thanksgiving)" },
+            { date: "2026-12-23", name: "Early Release (Christmas)" },
+            { date: "2026-12-31", name: "Early Release (New Year's)" }
+        ];
+
+        // Helper functions to check if a date is a holiday
+        function getFullHoliday(dateStr) {
+            return fullHolidays.find(h => h.date === dateStr);
+        }
+
+        function getHalfHoliday(dateStr) {
+            return halfHolidays.find(h => h.date === dateStr);
+        }
 
         // Extend pay periods backwards and forwards by a year using 14-day pattern
         function extendPayPeriods() {
@@ -862,6 +1007,18 @@
                             dayCell.classList.add('payday');
                         }
 
+                        // Check if it's a full holiday
+                        const fullHoliday = getFullHoliday(dateStr);
+                        if (fullHoliday) {
+                            dayCell.classList.add('full-holiday');
+                        }
+
+                        // Check if it's a half holiday
+                        const halfHoliday = getHalfHoliday(dateStr);
+                        if (halfHoliday) {
+                            dayCell.classList.add('half-holiday');
+                        }
+
                         // Add click handler
                         dayCell.addEventListener('click', function() {
                             const clickedPeriod = findCurrentPeriod(date);
@@ -876,7 +1033,7 @@
 
                         const dayLabel = document.createElement('div');
                         dayLabel.className = 'day-label';
-                        
+
                         if (selectedPeriod && dateStr === selectedPeriod.payDate) {
                             dayLabel.textContent = '💰 PAYDAY';
                         } else {
@@ -885,6 +1042,20 @@
 
                         dayCell.appendChild(dayNumber);
                         dayCell.appendChild(dayLabel);
+
+                        // Add holiday name if applicable
+                        if (fullHoliday) {
+                            const holidayName = document.createElement('div');
+                            holidayName.className = 'holiday-name';
+                            holidayName.textContent = fullHoliday.name;
+                            dayCell.appendChild(holidayName);
+                        } else if (halfHoliday) {
+                            const holidayName = document.createElement('div');
+                            holidayName.className = 'holiday-name';
+                            holidayName.textContent = halfHoliday.name;
+                            dayCell.appendChild(holidayName);
+                        }
+
                         grid.appendChild(dayCell);
                     }
 
