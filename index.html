@@ -524,6 +524,110 @@
             font-size: 0.9rem;
         }
 
+        .legend-item.clickable {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+        }
+
+        .legend-item.clickable:hover {
+            background: rgba(116, 185, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .payday-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 31, 58, 0.98) 100%);
+            border: 3px solid var(--accent);
+            border-radius: 20px;
+            padding: 2rem 3rem;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(253, 203, 110, 0.3);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .payday-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .payday-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .payday-popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .popup-title {
+            font-family: 'Righteous', cursive;
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .popup-days {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+            margin: 0.5rem 0;
+        }
+
+        .popup-days.today-payday {
+            color: var(--accent);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .popup-label {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .popup-date {
+            font-size: 1rem;
+            color: var(--text-light);
+            opacity: 0.8;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .popup-close:hover {
+            color: var(--text-light);
+        }
+
         .payday-arrow {
             position: absolute;
             top: -60px;
@@ -613,6 +717,19 @@
     </style>
 </head>
 <body>
+    <!-- Payday Popup Overlay -->
+    <div class="payday-popup-overlay" id="paydayPopupOverlay"></div>
+
+    <!-- Payday Popup -->
+    <div class="payday-popup" id="paydayPopup">
+        <button class="popup-close" id="popupClose">&times;</button>
+        <div class="popup-icon">💰</div>
+        <div class="popup-title">Days Until Payday</div>
+        <div class="popup-days" id="popupDays">0</div>
+        <div class="popup-label" id="popupLabel">days to go!</div>
+        <div class="popup-date" id="popupDate">Payday: January 1, 2026</div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>2026 Holiday and Payroll Calendar</h1>
@@ -689,7 +806,7 @@
                 <div class="legend-box half-holiday"></div>
                 <div class="legend-text">Half Day (Early Release)</div>
             </div>
-            <div class="legend-item">
+            <div class="legend-item clickable" id="todayLegend" title="Click to go back to today">
                 <div class="legend-box today"></div>
                 <div class="legend-text">Today</div>
             </div>
@@ -818,6 +935,80 @@
         }
 
         const allPayPeriods = extendPayPeriods();
+
+        // Popup functions
+        function getNextPayday(fromDate) {
+            const dateStr = fromDate.toISOString().split('T')[0];
+            for (let period of allPayPeriods) {
+                if (period.payDate >= dateStr) {
+                    return period.payDate;
+                }
+            }
+            return null;
+        }
+
+        function getDaysUntilPayday(fromDate) {
+            const nextPayday = getNextPayday(fromDate);
+            if (!nextPayday) return null;
+
+            const paydayDate = new Date(nextPayday + 'T00:00:00');
+            const today = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+            const diffTime = paydayDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return { days: diffDays, paydayDate: nextPayday };
+        }
+
+        function showPaydayPopup() {
+            const today = new Date();
+            const paydayInfo = getDaysUntilPayday(today);
+
+            if (!paydayInfo) return;
+
+            const popup = document.getElementById('paydayPopup');
+            const overlay = document.getElementById('paydayPopupOverlay');
+            const daysEl = document.getElementById('popupDays');
+            const labelEl = document.getElementById('popupLabel');
+            const dateEl = document.getElementById('popupDate');
+
+            daysEl.textContent = paydayInfo.days;
+
+            if (paydayInfo.days === 0) {
+                daysEl.classList.add('today-payday');
+                labelEl.textContent = "It's PAYDAY! 🎉";
+            } else if (paydayInfo.days === 1) {
+                daysEl.classList.remove('today-payday');
+                labelEl.textContent = 'day to go!';
+            } else {
+                daysEl.classList.remove('today-payday');
+                labelEl.textContent = 'days to go!';
+            }
+
+            const paydayDateObj = new Date(paydayInfo.paydayDate + 'T00:00:00');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            dateEl.textContent = `Payday: ${monthNames[paydayDateObj.getMonth()]} ${paydayDateObj.getDate()}, ${paydayDateObj.getFullYear()}`;
+
+            overlay.classList.add('show');
+            popup.classList.add('show');
+        }
+
+        function hidePaydayPopup() {
+            const popup = document.getElementById('paydayPopup');
+            const overlay = document.getElementById('paydayPopupOverlay');
+            overlay.classList.remove('show');
+            popup.classList.remove('show');
+        }
+
+        // Setup popup close handlers
+        document.getElementById('popupClose').addEventListener('click', hidePaydayPopup);
+        document.getElementById('paydayPopupOverlay').addEventListener('click', hidePaydayPopup);
+
+        // Close popup on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hidePaydayPopup();
+            }
+        });
 
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                            'July', 'August', 'September', 'October', 'November', 'December'];
@@ -1119,8 +1310,20 @@
                 }
             });
 
+            // Today legend click handler - navigate back to today and show popup
+            document.getElementById('todayLegend').addEventListener('click', function() {
+                currentOffset = 0;
+                selectedPeriod = findCurrentPeriod(today);
+                renderCalendar();
+                updateDisplay(selectedPeriod);
+                showPaydayPopup();
+            });
+
             // Initial render
             renderCalendar();
+
+            // Show payday popup on initial page load
+            setTimeout(showPaydayPopup, 500);
         }
 
         // Initialize calendar on page load
