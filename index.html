@@ -1066,9 +1066,9 @@
                 payDate.setDate(payDate.getDate() + 5);
                 
                 extended.unshift({
-                    payDate: payDate.toISOString().split('T')[0],
-                    periodStart: currentStart.toISOString().split('T')[0],
-                    periodEnd: currentEnd.toISOString().split('T')[0]
+                    payDate: toLocalDateString(payDate),
+                    periodStart: toLocalDateString(currentStart),
+                    periodEnd: toLocalDateString(currentEnd)
                 });
             }
             
@@ -1091,9 +1091,9 @@
                 payDate.setDate(payDate.getDate() + 5);
                 
                 extended.push({
-                    payDate: payDate.toISOString().split('T')[0],
-                    periodStart: currentStart.toISOString().split('T')[0],
-                    periodEnd: currentEnd.toISOString().split('T')[0]
+                    payDate: toLocalDateString(payDate),
+                    periodStart: toLocalDateString(currentStart),
+                    periodEnd: toLocalDateString(currentEnd)
                 });
             }
             
@@ -1102,9 +1102,17 @@
 
         const allPayPeriods = extendPayPeriods();
 
+        // Helper function to get local date string (YYYY-MM-DD) without timezone conversion
+        function toLocalDateString(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         // Popup functions
         function getNextPayday(fromDate) {
-            const dateStr = fromDate.toISOString().split('T')[0];
+            const dateStr = toLocalDateString(fromDate);
             for (let period of allPayPeriods) {
                 if (period.payDate >= dateStr) {
                     return period.payDate;
@@ -1185,7 +1193,7 @@
         const MAX_OFFSET = 12;  // 1 year forward
 
         function findCurrentPeriod(date) {
-            const dateStr = date.toISOString().split('T')[0];
+            const dateStr = toLocalDateString(date);
             for (let period of allPayPeriods) {
                 if (dateStr >= period.periodStart && dateStr <= period.periodEnd) {
                     return period;
@@ -1239,7 +1247,7 @@
                 selectedPeriod = period;
                 
                 // Update current info
-                document.getElementById('todayDate').textContent = formatDate(today.toISOString().split('T')[0]);
+                document.getElementById('todayDate').textContent = formatDate(toLocalDateString(today));
                 if (selectedPeriod) {
                     document.getElementById('periodRange').textContent = 
                         `${new Date(selectedPeriod.periodStart + 'T00:00:00').getMonth() + 1}/${new Date(selectedPeriod.periodStart + 'T00:00:00').getDate()} - ${new Date(selectedPeriod.periodEnd + 'T00:00:00').getMonth() + 1}/${new Date(selectedPeriod.periodEnd + 'T00:00:00').getDate()}`;
@@ -1366,7 +1374,7 @@
                     const firstDayDate = new Date(year, month, 1);
                     const firstSunday = new Date(firstDayDate);
                     firstSunday.setDate(firstSunday.getDate() - firstDay);
-                    addPeriodWeekCell(firstSunday.toISOString().split('T')[0]);
+                    addPeriodWeekCell(toLocalDateString(firstSunday));
 
                     // Add empty cells for days before month starts
                     for (let i = 0; i < firstDay; i++) {
@@ -1379,7 +1387,7 @@
                     // Add day cells
                     for (let day = 1; day <= daysInMonth; day++) {
                         const date = new Date(year, month, day);
-                        const dateStr = date.toISOString().split('T')[0];
+                        const dateStr = toLocalDateString(date);
 
                         // Check if we need to start a new row (Sunday)
                         if (date.getDay() === 0 && day > 1) {
@@ -1392,8 +1400,10 @@
                         dayCell.className = 'day-cell';
                         dayCell.dataset.date = dateStr;
 
+                        const todayStr = toLocalDateString(today);
+
                         // Check if it's today
-                        if (dateStr === today.toISOString().split('T')[0]) {
+                        if (dateStr === todayStr) {
                             dayCell.classList.add('today');
                         }
 
