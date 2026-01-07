@@ -29,16 +29,6 @@
             --holiday-half-light: #a855f7;
             --observance: #3498db;
             --observance-light: #74b9ff;
-            --lent: #8e44ad;
-            --lent-light: #bb6bd9;
-            --passover: #2980b9;
-            --passover-light: #5dade2;
-            --rosh: #16a085;
-            --rosh-light: #1abc9c;
-            --hanukkah: #2574a9;
-            --hanukkah-light: #4a9fd5;
-            --kwanzaa: #c0392b;
-            --kwanzaa-light: #e74c3c;
         }
 
         body {
@@ -493,71 +483,6 @@
             color: rgba(116, 185, 255, 0.9);
         }
 
-        .lent-period {
-            background: linear-gradient(135deg, rgba(142, 68, 173, 0.25), rgba(155, 89, 182, 0.25));
-            border-color: var(--lent);
-        }
-
-        .lent-period .day-number {
-            color: var(--lent-light);
-        }
-
-        .lent-period .holiday-name {
-            color: rgba(187, 107, 217, 0.9);
-        }
-
-        .passover-period {
-            background: linear-gradient(135deg, rgba(41, 128, 185, 0.25), rgba(52, 152, 219, 0.25));
-            border-color: var(--passover);
-        }
-
-        .passover-period .day-number {
-            color: var(--passover-light);
-        }
-
-        .passover-period .holiday-name {
-            color: rgba(93, 173, 226, 0.9);
-        }
-
-        .rosh-period {
-            background: linear-gradient(135deg, rgba(22, 160, 133, 0.25), rgba(26, 188, 156, 0.25));
-            border-color: var(--rosh);
-        }
-
-        .rosh-period .day-number {
-            color: var(--rosh-light);
-        }
-
-        .rosh-period .holiday-name {
-            color: rgba(26, 188, 156, 0.9);
-        }
-
-        .hanukkah-period {
-            background: linear-gradient(135deg, rgba(37, 116, 169, 0.25), rgba(74, 159, 213, 0.25));
-            border-color: var(--hanukkah);
-        }
-
-        .hanukkah-period .day-number {
-            color: var(--hanukkah-light);
-        }
-
-        .hanukkah-period .holiday-name {
-            color: rgba(74, 159, 213, 0.9);
-        }
-
-        .kwanzaa-period {
-            background: linear-gradient(135deg, rgba(192, 57, 43, 0.25), rgba(231, 76, 60, 0.25));
-            border-color: var(--kwanzaa);
-        }
-
-        .kwanzaa-period .day-number {
-            color: var(--kwanzaa-light);
-        }
-
-        .kwanzaa-period .holiday-name {
-            color: rgba(231, 76, 60, 0.9);
-        }
-
         .calendar-grid {
             display: grid;
             grid-template-columns: 60px repeat(7, 1fr);
@@ -655,31 +580,6 @@
         .legend-box.observance-legend {
             background: linear-gradient(135deg, rgba(52, 152, 219, 0.25), rgba(41, 128, 185, 0.25));
             border-color: var(--observance);
-        }
-
-        .legend-box.lent-legend {
-            background: linear-gradient(135deg, rgba(142, 68, 173, 0.25), rgba(155, 89, 182, 0.25));
-            border-color: var(--lent);
-        }
-
-        .legend-box.passover-legend {
-            background: linear-gradient(135deg, rgba(41, 128, 185, 0.25), rgba(52, 152, 219, 0.25));
-            border-color: var(--passover);
-        }
-
-        .legend-box.rosh-legend {
-            background: linear-gradient(135deg, rgba(22, 160, 133, 0.25), rgba(26, 188, 156, 0.25));
-            border-color: var(--rosh);
-        }
-
-        .legend-box.hanukkah-legend {
-            background: linear-gradient(135deg, rgba(37, 116, 169, 0.25), rgba(74, 159, 213, 0.25));
-            border-color: var(--hanukkah);
-        }
-
-        .legend-box.kwanzaa-legend {
-            background: linear-gradient(135deg, rgba(192, 57, 43, 0.25), rgba(231, 76, 60, 0.25));
-            border-color: var(--kwanzaa);
         }
 
         .legend-text {
@@ -1001,28 +901,6 @@
             <div class="legend-item clickable" id="todayLegend" title="Click to go back to today">
                 <div class="legend-box today"></div>
                 <div class="legend-text">Today</div>
-            </div>
-        </div>
-        <div class="legend" style="margin-top: 1rem;">
-            <div class="legend-item">
-                <div class="legend-box lent-legend"></div>
-                <div class="legend-text">Lent</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box passover-legend"></div>
-                <div class="legend-text">Passover</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box rosh-legend"></div>
-                <div class="legend-text">Rosh Hashanah</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box hanukkah-legend"></div>
-                <div class="legend-text">Hanukkah</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box kwanzaa-legend"></div>
-                <div class="legend-text">Kwanzaa</div>
             </div>
         </div>
     </div>
@@ -1578,11 +1456,8 @@
                             dayCell.classList.add('observance');
                         }
 
-                        // Check if it's part of a multi-day holiday (only if not already styled)
+                        // Check if it's part of a multi-day holiday (for text label only)
                         const multiDay = getMultiDayHoliday(dateStr);
-                        if (multiDay && !fullHoliday && !halfHoliday && !observance) {
-                            dayCell.classList.add(`${multiDay.type}-period`);
-                        }
 
                         // Add click handler
                         dayCell.addEventListener('click', function() {
