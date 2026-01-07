@@ -27,8 +27,6 @@
             --holiday-full-light: #ff6b6b;
             --holiday-half: #9b59b6;
             --holiday-half-light: #a855f7;
-            --observance: #3498db;
-            --observance-light: #74b9ff;
         }
 
         body {
@@ -464,25 +462,6 @@
             color: rgba(168, 85, 247, 0.9);
         }
 
-        .observance {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.25), rgba(41, 128, 185, 0.25));
-            border-color: var(--observance);
-        }
-
-        .observance .day-number {
-            color: var(--observance-light);
-        }
-
-        .observance .day-label {
-            color: var(--observance-light);
-            font-weight: 600;
-            font-size: 0.65rem;
-        }
-
-        .observance .holiday-name {
-            color: rgba(116, 185, 255, 0.9);
-        }
-
         .calendar-grid {
             display: grid;
             grid-template-columns: 60px repeat(7, 1fr);
@@ -575,11 +554,6 @@
         .legend-box.half-holiday {
             background: linear-gradient(135deg, rgba(155, 89, 182, 0.35), rgba(142, 68, 173, 0.35));
             border-color: var(--holiday-half);
-        }
-
-        .legend-box.observance-legend {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.25), rgba(41, 128, 185, 0.25));
-            border-color: var(--observance);
         }
 
         .legend-text {
@@ -893,10 +867,6 @@
             <div class="legend-item">
                 <div class="legend-box half-holiday"></div>
                 <div class="legend-text">Half Day (Early Release)</div>
-            </div>
-            <div class="legend-item">
-                <div class="legend-box observance-legend"></div>
-                <div class="legend-text">Observance</div>
             </div>
             <div class="legend-item clickable" id="todayLegend" title="Click to go back to today">
                 <div class="legend-box today"></div>
@@ -1450,11 +1420,8 @@
                             dayCell.classList.add('half-holiday');
                         }
 
-                        // Check if it's an observance (only if not already a holiday)
+                        // Check if it's an observance (for text label only, no styling)
                         const observance = getObservance(dateStr);
-                        if (observance && !fullHoliday && !halfHoliday) {
-                            dayCell.classList.add('observance');
-                        }
 
                         // Check if it's part of a multi-day holiday (for text label only)
                         const multiDay = getMultiDayHoliday(dateStr);
