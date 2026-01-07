@@ -27,6 +27,18 @@
             --holiday-full-light: #ff6b6b;
             --holiday-half: #9b59b6;
             --holiday-half-light: #a855f7;
+            --observance: #3498db;
+            --observance-light: #74b9ff;
+            --lent: #8e44ad;
+            --lent-light: #bb6bd9;
+            --passover: #2980b9;
+            --passover-light: #5dade2;
+            --rosh: #16a085;
+            --rosh-light: #1abc9c;
+            --hanukkah: #2574a9;
+            --hanukkah-light: #4a9fd5;
+            --kwanzaa: #c0392b;
+            --kwanzaa-light: #e74c3c;
         }
 
         body {
@@ -226,13 +238,6 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1rem;
-            margin-bottom: 3rem;
         }
 
         .month-section {
@@ -469,6 +474,134 @@
             color: rgba(168, 85, 247, 0.9);
         }
 
+        .observance {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.25), rgba(41, 128, 185, 0.25));
+            border-color: var(--observance);
+        }
+
+        .observance .day-number {
+            color: var(--observance-light);
+        }
+
+        .observance .day-label {
+            color: var(--observance-light);
+            font-weight: 600;
+            font-size: 0.65rem;
+        }
+
+        .observance .holiday-name {
+            color: rgba(116, 185, 255, 0.9);
+        }
+
+        .lent-period {
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.25), rgba(155, 89, 182, 0.25));
+            border-color: var(--lent);
+        }
+
+        .lent-period .day-number {
+            color: var(--lent-light);
+        }
+
+        .lent-period .holiday-name {
+            color: rgba(187, 107, 217, 0.9);
+        }
+
+        .passover-period {
+            background: linear-gradient(135deg, rgba(41, 128, 185, 0.25), rgba(52, 152, 219, 0.25));
+            border-color: var(--passover);
+        }
+
+        .passover-period .day-number {
+            color: var(--passover-light);
+        }
+
+        .passover-period .holiday-name {
+            color: rgba(93, 173, 226, 0.9);
+        }
+
+        .rosh-period {
+            background: linear-gradient(135deg, rgba(22, 160, 133, 0.25), rgba(26, 188, 156, 0.25));
+            border-color: var(--rosh);
+        }
+
+        .rosh-period .day-number {
+            color: var(--rosh-light);
+        }
+
+        .rosh-period .holiday-name {
+            color: rgba(26, 188, 156, 0.9);
+        }
+
+        .hanukkah-period {
+            background: linear-gradient(135deg, rgba(37, 116, 169, 0.25), rgba(74, 159, 213, 0.25));
+            border-color: var(--hanukkah);
+        }
+
+        .hanukkah-period .day-number {
+            color: var(--hanukkah-light);
+        }
+
+        .hanukkah-period .holiday-name {
+            color: rgba(74, 159, 213, 0.9);
+        }
+
+        .kwanzaa-period {
+            background: linear-gradient(135deg, rgba(192, 57, 43, 0.25), rgba(231, 76, 60, 0.25));
+            border-color: var(--kwanzaa);
+        }
+
+        .kwanzaa-period .day-number {
+            color: var(--kwanzaa-light);
+        }
+
+        .kwanzaa-period .holiday-name {
+            color: rgba(231, 76, 60, 0.9);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 60px repeat(7, 1fr);
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .period-week-header {
+            background: var(--bg-card);
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .period-week-cell {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 0.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .period-week-cell .period-num {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .period-week-cell .week-num {
+            color: var(--primary);
+            font-size: 0.6rem;
+        }
+
         .legend {
             display: flex;
             justify-content: center;
@@ -517,6 +650,36 @@
         .legend-box.half-holiday {
             background: linear-gradient(135deg, rgba(155, 89, 182, 0.35), rgba(142, 68, 173, 0.35));
             border-color: var(--holiday-half);
+        }
+
+        .legend-box.observance-legend {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.25), rgba(41, 128, 185, 0.25));
+            border-color: var(--observance);
+        }
+
+        .legend-box.lent-legend {
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.25), rgba(155, 89, 182, 0.25));
+            border-color: var(--lent);
+        }
+
+        .legend-box.passover-legend {
+            background: linear-gradient(135deg, rgba(41, 128, 185, 0.25), rgba(52, 152, 219, 0.25));
+            border-color: var(--passover);
+        }
+
+        .legend-box.rosh-legend {
+            background: linear-gradient(135deg, rgba(22, 160, 133, 0.25), rgba(26, 188, 156, 0.25));
+            border-color: var(--rosh);
+        }
+
+        .legend-box.hanukkah-legend {
+            background: linear-gradient(135deg, rgba(37, 116, 169, 0.25), rgba(74, 159, 213, 0.25));
+            border-color: var(--hanukkah);
+        }
+
+        .legend-box.kwanzaa-legend {
+            background: linear-gradient(135deg, rgba(192, 57, 43, 0.25), rgba(231, 76, 60, 0.25));
+            border-color: var(--kwanzaa);
         }
 
         .legend-text {
@@ -684,6 +847,7 @@
             }
 
             .calendar-grid {
+                grid-template-columns: 40px repeat(7, 1fr);
                 gap: 0.5rem;
             }
 
@@ -712,6 +876,30 @@
             .nav-info {
                 min-width: 150px;
                 font-size: 1rem;
+            }
+
+            .period-week-header {
+                font-size: 0.6rem;
+                padding: 0.5rem 0.25rem;
+            }
+
+            .period-week-cell {
+                font-size: 0.55rem;
+                padding: 0.25rem;
+            }
+
+            .period-week-cell .period-num {
+                font-size: 0.55rem;
+            }
+
+            .period-week-cell .week-num {
+                font-size: 0.5rem;
+            }
+
+            .legend {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
             }
         }
     </style>
@@ -806,9 +994,35 @@
                 <div class="legend-box half-holiday"></div>
                 <div class="legend-text">Half Day (Early Release)</div>
             </div>
+            <div class="legend-item">
+                <div class="legend-box observance-legend"></div>
+                <div class="legend-text">Observance</div>
+            </div>
             <div class="legend-item clickable" id="todayLegend" title="Click to go back to today">
                 <div class="legend-box today"></div>
                 <div class="legend-text">Today</div>
+            </div>
+        </div>
+        <div class="legend" style="margin-top: 1rem;">
+            <div class="legend-item">
+                <div class="legend-box lent-legend"></div>
+                <div class="legend-text">Lent</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box passover-legend"></div>
+                <div class="legend-text">Passover</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box rosh-legend"></div>
+                <div class="legend-text">Rosh Hashanah</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box hanukkah-legend"></div>
+                <div class="legend-text">Hanukkah</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box kwanzaa-legend"></div>
+                <div class="legend-text">Kwanzaa</div>
             </div>
         </div>
     </div>
@@ -844,14 +1058,16 @@
             {"payDate": "2026-12-18", "periodStart": "2026-11-30", "periodEnd": "2026-12-13"}
         ];
 
-        // Full Paid Holidays for 2026
+        // Full Paid Holidays for 2026 (Federally Recognized)
         const fullHolidays = [
             { date: "2026-01-01", name: "New Year's Day" },
             { date: "2026-01-19", name: "MLK Day" },
+            { date: "2026-02-16", name: "Presidents Day" },
             { date: "2026-05-25", name: "Memorial Day" },
             { date: "2026-06-19", name: "Juneteenth" },
             { date: "2026-07-03", name: "Independence Day" },
             { date: "2026-09-07", name: "Labor Day" },
+            { date: "2026-10-12", name: "Columbus Day" },
             { date: "2026-11-11", name: "Veteran's Day" },
             { date: "2026-11-26", name: "Thanksgiving" },
             { date: "2026-11-27", name: "Day After Thanksgiving" },
@@ -869,6 +1085,92 @@
             { date: "2026-12-31", name: "Early Release (New Year's)" }
         ];
 
+        // Other Important Dates / Observances for 2026
+        const observances = [
+            { date: "2026-02-08", name: "Super Bowl Sunday" },
+            { date: "2026-02-14", name: "Valentine's Day" },
+            { date: "2026-03-17", name: "St. Patrick's Day" },
+            { date: "2026-04-05", name: "Easter Sunday" },
+            { date: "2026-04-22", name: "Admin. Professionals Day / Earth Day" },
+            { date: "2026-05-05", name: "Cinco de Mayo" },
+            { date: "2026-05-10", name: "Mother's Day" },
+            { date: "2026-06-21", name: "Father's Day" },
+            { date: "2026-09-18", name: "Fiestas Patrias" },
+            { date: "2026-09-19", name: "ZHZW Anniversary" },
+            { date: "2026-10-16", name: "Boss's Day" },
+            { date: "2026-10-17", name: "Sweetest Day" },
+            { date: "2026-10-31", name: "Halloween" }
+        ];
+
+        // Multi-day holiday periods
+        const multiDayHolidays = {
+            lent: { start: "2026-02-18", end: "2026-04-02", name: "Lent" },
+            passover: { start: "2026-04-01", end: "2026-04-09", name: "Passover" },
+            rosh: { start: "2026-09-11", end: "2026-09-13", name: "Rosh Hashanah" },
+            hanukkah: { start: "2026-12-04", end: "2026-12-12", name: "Hanukkah" },
+            kwanzaa: { start: "2026-12-26", end: "2027-01-01", name: "Kwanzaa" }
+        };
+
+        // Period and Week data (P##W# format)
+        const periodWeekData = [
+            { period: 13, week: 1, start: "2026-01-04", end: "2026-01-10" },
+            { period: 13, week: 2, start: "2026-01-11", end: "2026-01-17" },
+            { period: 13, week: 3, start: "2026-01-18", end: "2026-01-24" },
+            { period: 13, week: 4, start: "2026-01-25", end: "2026-01-31" },
+            { period: 1, week: 1, start: "2026-02-01", end: "2026-02-07" },
+            { period: 1, week: 2, start: "2026-02-08", end: "2026-02-14" },
+            { period: 1, week: 3, start: "2026-02-15", end: "2026-02-21" },
+            { period: 1, week: 4, start: "2026-02-22", end: "2026-02-28" },
+            { period: 2, week: 1, start: "2026-03-01", end: "2026-03-07" },
+            { period: 2, week: 2, start: "2026-03-08", end: "2026-03-14" },
+            { period: 2, week: 3, start: "2026-03-15", end: "2026-03-21" },
+            { period: 2, week: 4, start: "2026-03-22", end: "2026-03-28" },
+            { period: 3, week: 1, start: "2026-03-29", end: "2026-04-04" },
+            { period: 3, week: 2, start: "2026-04-05", end: "2026-04-11" },
+            { period: 3, week: 3, start: "2026-04-12", end: "2026-04-18" },
+            { period: 3, week: 4, start: "2026-04-19", end: "2026-04-25" },
+            { period: 4, week: 1, start: "2026-04-26", end: "2026-05-02" },
+            { period: 4, week: 2, start: "2026-05-03", end: "2026-05-09" },
+            { period: 4, week: 3, start: "2026-05-10", end: "2026-05-16" },
+            { period: 4, week: 4, start: "2026-05-17", end: "2026-05-23" },
+            { period: 5, week: 1, start: "2026-05-24", end: "2026-05-30" },
+            { period: 5, week: 2, start: "2026-05-31", end: "2026-06-06" },
+            { period: 5, week: 3, start: "2026-06-07", end: "2026-06-13" },
+            { period: 5, week: 4, start: "2026-06-14", end: "2026-06-20" },
+            { period: 6, week: 1, start: "2026-06-21", end: "2026-06-27" },
+            { period: 6, week: 2, start: "2026-06-28", end: "2026-07-04" },
+            { period: 6, week: 3, start: "2026-07-05", end: "2026-07-11" },
+            { period: 6, week: 4, start: "2026-07-12", end: "2026-07-18" },
+            { period: 7, week: 1, start: "2026-07-19", end: "2026-07-25" },
+            { period: 7, week: 2, start: "2026-07-26", end: "2026-08-01" },
+            { period: 7, week: 3, start: "2026-08-02", end: "2026-08-08" },
+            { period: 7, week: 4, start: "2026-08-09", end: "2026-08-15" },
+            { period: 8, week: 1, start: "2026-08-16", end: "2026-08-22" },
+            { period: 8, week: 2, start: "2026-08-23", end: "2026-08-29" },
+            { period: 8, week: 3, start: "2026-08-30", end: "2026-09-05" },
+            { period: 8, week: 4, start: "2026-09-06", end: "2026-09-12" },
+            { period: 9, week: 1, start: "2026-09-13", end: "2026-09-19" },
+            { period: 9, week: 2, start: "2026-09-20", end: "2026-09-26" },
+            { period: 9, week: 3, start: "2026-09-27", end: "2026-10-03" },
+            { period: 9, week: 4, start: "2026-10-04", end: "2026-10-10" },
+            { period: 10, week: 1, start: "2026-10-11", end: "2026-10-17" },
+            { period: 10, week: 2, start: "2026-10-18", end: "2026-10-24" },
+            { period: 10, week: 3, start: "2026-10-25", end: "2026-10-31" },
+            { period: 10, week: 4, start: "2026-11-01", end: "2026-11-07" },
+            { period: 11, week: 1, start: "2026-11-08", end: "2026-11-14" },
+            { period: 11, week: 2, start: "2026-11-15", end: "2026-11-21" },
+            { period: 11, week: 3, start: "2026-11-22", end: "2026-11-28" },
+            { period: 11, week: 4, start: "2026-11-29", end: "2026-12-05" },
+            { period: 12, week: 1, start: "2026-12-06", end: "2026-12-12" },
+            { period: 12, week: 2, start: "2026-12-13", end: "2026-12-19" },
+            { period: 12, week: 3, start: "2026-12-20", end: "2026-12-26" },
+            { period: 12, week: 4, start: "2026-12-27", end: "2027-01-02" },
+            { period: 13, week: 1, start: "2027-01-03", end: "2027-01-09" },
+            { period: 13, week: 2, start: "2027-01-10", end: "2027-01-16" },
+            { period: 13, week: 3, start: "2027-01-17", end: "2027-01-23" },
+            { period: 13, week: 4, start: "2027-01-24", end: "2027-01-30" }
+        ];
+
         // Helper functions to check if a date is a holiday
         function getFullHoliday(dateStr) {
             return fullHolidays.find(h => h.date === dateStr);
@@ -876,6 +1178,23 @@
 
         function getHalfHoliday(dateStr) {
             return halfHolidays.find(h => h.date === dateStr);
+        }
+
+        function getObservance(dateStr) {
+            return observances.find(h => h.date === dateStr);
+        }
+
+        function getMultiDayHoliday(dateStr) {
+            for (const [key, holiday] of Object.entries(multiDayHolidays)) {
+                if (dateStr >= holiday.start && dateStr <= holiday.end) {
+                    return { type: key, ...holiday };
+                }
+            }
+            return null;
+        }
+
+        function getPeriodWeek(dateStr) {
+            return periodWeekData.find(pw => dateStr >= pw.start && dateStr <= pw.end);
         }
 
         // Extend pay periods backwards and forwards by a year using 14-day pattern
@@ -1155,6 +1474,12 @@
                     const grid = document.createElement('div');
                     grid.className = 'calendar-grid';
 
+                    // Add period/week header
+                    const pwHeader = document.createElement('div');
+                    pwHeader.className = 'period-week-header';
+                    pwHeader.textContent = 'P#W#';
+                    grid.appendChild(pwHeader);
+
                     // Add weekday headers
                     dayNames.forEach(day => {
                         const dayHeader = document.createElement('div');
@@ -1167,18 +1492,55 @@
                     const firstDay = new Date(year, month, 1).getDay();
                     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+                    // Track which row we're on for period/week cells
+                    let currentRow = 0;
+                    let cellsInCurrentRow = 0;
+
+                    // Function to add period/week cell for a row
+                    function addPeriodWeekCell(rowStartDate) {
+                        const pwCell = document.createElement('div');
+                        pwCell.className = 'period-week-cell';
+                        const pw = getPeriodWeek(rowStartDate);
+                        if (pw) {
+                            const periodNum = document.createElement('div');
+                            periodNum.className = 'period-num';
+                            periodNum.textContent = `P${String(pw.period).padStart(2, '0')}`;
+                            const weekNum = document.createElement('div');
+                            weekNum.className = 'week-num';
+                            weekNum.textContent = `W${pw.week}`;
+                            pwCell.appendChild(periodNum);
+                            pwCell.appendChild(weekNum);
+                        }
+                        grid.appendChild(pwCell);
+                    }
+
+                    // Add period/week cell for first row
+                    // Find the date for Sunday of the first week
+                    const firstDayDate = new Date(year, month, 1);
+                    const firstSunday = new Date(firstDayDate);
+                    firstSunday.setDate(firstSunday.getDate() - firstDay);
+                    addPeriodWeekCell(firstSunday.toISOString().split('T')[0]);
+
                     // Add empty cells for days before month starts
                     for (let i = 0; i < firstDay; i++) {
                         const emptyCell = document.createElement('div');
                         emptyCell.className = 'day-cell empty-cell';
                         grid.appendChild(emptyCell);
+                        cellsInCurrentRow++;
                     }
 
                     // Add day cells
                     for (let day = 1; day <= daysInMonth; day++) {
                         const date = new Date(year, month, day);
                         const dateStr = date.toISOString().split('T')[0];
-                        
+
+                        // Check if we need to start a new row (Sunday)
+                        if (date.getDay() === 0 && day > 1) {
+                            currentRow++;
+                            cellsInCurrentRow = 0;
+                            addPeriodWeekCell(dateStr);
+                        }
+
                         const dayCell = document.createElement('div');
                         dayCell.className = 'day-cell';
                         dayCell.dataset.date = dateStr;
@@ -1210,6 +1572,18 @@
                             dayCell.classList.add('half-holiday');
                         }
 
+                        // Check if it's an observance (only if not already a holiday)
+                        const observance = getObservance(dateStr);
+                        if (observance && !fullHoliday && !halfHoliday) {
+                            dayCell.classList.add('observance');
+                        }
+
+                        // Check if it's part of a multi-day holiday (only if not already styled)
+                        const multiDay = getMultiDayHoliday(dateStr);
+                        if (multiDay && !fullHoliday && !halfHoliday && !observance) {
+                            dayCell.classList.add(`${multiDay.type}-period`);
+                        }
+
                         // Add click handler
                         dayCell.addEventListener('click', function() {
                             const clickedPeriod = findCurrentPeriod(date);
@@ -1234,7 +1608,7 @@
                         dayCell.appendChild(dayNumber);
                         dayCell.appendChild(dayLabel);
 
-                        // Add holiday name if applicable
+                        // Add holiday/observance name if applicable
                         if (fullHoliday) {
                             const holidayName = document.createElement('div');
                             holidayName.className = 'holiday-name';
@@ -1245,9 +1619,20 @@
                             holidayName.className = 'holiday-name';
                             holidayName.textContent = halfHoliday.name;
                             dayCell.appendChild(holidayName);
+                        } else if (observance) {
+                            const holidayName = document.createElement('div');
+                            holidayName.className = 'holiday-name';
+                            holidayName.textContent = observance.name;
+                            dayCell.appendChild(holidayName);
+                        } else if (multiDay) {
+                            const holidayName = document.createElement('div');
+                            holidayName.className = 'holiday-name';
+                            holidayName.textContent = multiDay.name;
+                            dayCell.appendChild(holidayName);
                         }
 
                         grid.appendChild(dayCell);
+                        cellsInCurrentRow++;
                     }
 
                     monthSection.appendChild(grid);
