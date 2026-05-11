@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0e27">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>2026 Holiday and Payroll Calendar</title>
     <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Red+Hat+Display:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -34,9 +37,15 @@
             background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d3561 100%);
             color: var(--text-light);
             min-height: 100vh;
+            min-height: 100dvh;
             padding: 2rem;
+            padding-left: max(2rem, env(safe-area-inset-left));
+            padding-right: max(2rem, env(safe-area-inset-right));
+            padding-bottom: max(2rem, env(safe-area-inset-bottom));
             position: relative;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-text-size-adjust: 100%;
         }
 
         body::before {
@@ -183,11 +192,19 @@
             font-family: 'Red Hat Display', sans-serif;
         }
 
-        .nav-button:hover:not(:disabled) {
+        @media (hover: hover) {
+            .nav-button:hover:not(:disabled) {
+                background: var(--primary);
+                color: var(--text-light);
+                transform: translateY(-3px);
+                box-shadow: 0 10px 30px rgba(0, 184, 148, 0.3);
+            }
+        }
+
+        .nav-button:active:not(:disabled) {
             background: var(--primary);
             color: var(--text-light);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.3);
+            transform: scale(0.97);
         }
 
         .nav-button:disabled {
@@ -278,13 +295,19 @@
             transition: opacity 0.3s ease;
         }
 
-        .day-cell:hover::before {
-            opacity: 1;
+        @media (hover: hover) {
+            .day-cell:hover::before {
+                opacity: 1;
+            }
+
+            .day-cell:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0, 184, 148, 0.3);
+            }
         }
 
-        .day-cell:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 184, 148, 0.3);
+        .day-cell:active:not(.empty-cell) {
+            transform: scale(0.96);
         }
 
         .day-number {
@@ -716,64 +739,315 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 0.75rem;
+                padding-left: max(0.75rem, env(safe-area-inset-left));
+                padding-right: max(0.75rem, env(safe-area-inset-right));
+                padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+            }
+
+            /* Disable heavy full-viewport animated gradient on mobile */
+            body::before {
+                animation: none;
+                opacity: 0.6;
+            }
+
             h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
+                letter-spacing: -1px;
+                line-height: 1.1;
+                margin-bottom: 0.5rem;
             }
 
-            .calendar-grid {
-                grid-template-columns: 40px repeat(7, 1fr);
-                gap: 0.5rem;
+            .header {
+                margin-bottom: 1.5rem;
             }
 
-            .day-cell {
-                padding: 0.5rem;
-                min-height: 60px;
-            }
-
-            .day-number {
-                font-size: 1.2rem;
+            .current-info {
+                padding: 1.25rem;
+                border-radius: 16px;
+                margin-bottom: 1.5rem;
             }
 
             .info-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+
+            .info-label {
+                font-size: 0.75rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .info-value {
+                font-size: 1.3rem;
             }
 
             .navigation {
-                gap: 1rem;
+                gap: 0.5rem;
+                margin-bottom: 1.5rem;
+                flex-wrap: nowrap;
             }
 
             .nav-button {
-                padding: 0.75rem 1.5rem;
-                font-size: 1rem;
+                padding: 0.6rem 0.9rem;
+                font-size: 0.9rem;
+                border-radius: 10px;
+                gap: 0.25rem;
+                flex-shrink: 0;
+                min-height: 44px;
             }
 
             .nav-info {
-                min-width: 150px;
-                font-size: 1rem;
+                min-width: 0;
+                flex: 1;
+                font-size: 1.1rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 30px repeat(7, 1fr);
+                gap: 0.3rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .weekday-header {
+                padding: 0.45rem 0.2rem;
+                font-size: 0.65rem;
+                border-radius: 8px;
+                letter-spacing: 0.5px;
+            }
+
+            .day-cell {
+                padding: 0.3rem 0.15rem;
+                min-height: 56px;
+                border-radius: 10px;
+                border-width: 1.5px;
+                justify-content: flex-start;
+                padding-top: 0.4rem;
+            }
+
+            .day-number {
+                font-size: 1.05rem;
+            }
+
+            /* Day-of-week label inside cell is redundant with weekday header on mobile */
+            .day-label {
+                display: none;
+            }
+
+            /* But keep the PAYDAY label visible */
+            .payday .day-label {
+                display: block;
+                font-size: 0.55rem;
+                margin-top: 0.1rem;
+                letter-spacing: 0.5px;
+            }
+
+            .payday .day-number {
+                font-size: 1.3rem;
+            }
+
+            /* Use a softer payday animation on mobile (no scaling) */
+            .payday {
+                animation: payDayFlashMobile 2.5s ease-in-out infinite;
+            }
+
+            @keyframes payDayFlashMobile {
+                0%, 100% {
+                    box-shadow: 0 0 15px rgba(253, 203, 110, 0.4);
+                }
+                50% {
+                    box-shadow: 0 0 25px rgba(253, 203, 110, 0.7);
+                }
+            }
+
+            .holiday-name {
+                font-size: 0.55rem;
+                line-height: 1.05;
+                margin-top: 0.1rem;
+            }
+
+            .full-holiday .day-label,
+            .half-holiday .day-label {
+                display: none;
             }
 
             .period-week-header {
-                font-size: 0.6rem;
-                padding: 0.5rem 0.25rem;
+                font-size: 0.55rem;
+                padding: 0.45rem 0.15rem;
+                border-radius: 8px;
             }
 
             .period-week-cell {
                 font-size: 0.55rem;
-                padding: 0.25rem;
+                padding: 0.25rem 0.15rem;
+                border-radius: 8px;
             }
 
             .period-week-cell .period-num {
-                font-size: 0.55rem;
+                font-size: 0.6rem;
             }
 
             .period-week-cell .week-num {
-                font-size: 0.5rem;
+                font-size: 0.55rem;
             }
 
             .legend {
-                flex-direction: column;
-                align-items: center;
-                gap: 1rem;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem 1rem;
+                padding: 1rem;
+                border-radius: 12px;
+                margin-top: 1.5rem;
+            }
+
+            .legend-item {
+                gap: 0.5rem;
+            }
+
+            .legend-item.clickable {
+                grid-column: 1 / -1;
+                justify-content: center;
+                padding: 0.5rem;
+            }
+
+            .legend-box {
+                width: 22px;
+                height: 22px;
+                border-radius: 6px;
+                border-width: 1.5px;
+                flex-shrink: 0;
+            }
+
+            .legend-text {
+                font-size: 0.8rem;
+                line-height: 1.2;
+            }
+
+            /* Responsive popup */
+            .payday-popup {
+                padding: 1.5rem 1.25rem;
+                width: calc(100vw - 2rem);
+                max-width: 340px;
+                border-radius: 16px;
+            }
+
+            .popup-icon {
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .popup-title {
+                font-size: 1.25rem;
+            }
+
+            .popup-days {
+                font-size: 3.5rem;
+            }
+
+            .popup-label {
+                font-size: 1rem;
+            }
+
+            .popup-date {
+                font-size: 0.9rem;
+            }
+
+            /* Hide the "Payday" arrow on mobile - tight horizontal space */
+            .payday-arrow {
+                display: none !important;
+            }
+        }
+
+        /* Very small phones (iPhone SE, etc.) */
+        @media (max-width: 380px) {
+            body {
+                padding: 0.5rem;
+                padding-left: max(0.5rem, env(safe-area-inset-left));
+                padding-right: max(0.5rem, env(safe-area-inset-right));
+            }
+
+            h1 {
+                font-size: 1.65rem;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 24px repeat(7, 1fr);
+                gap: 0.2rem;
+            }
+
+            .day-cell {
+                min-height: 50px;
+                padding: 0.25rem 0.1rem;
+                border-radius: 8px;
+            }
+
+            .day-number {
+                font-size: 0.95rem;
+            }
+
+            .payday .day-number {
+                font-size: 1.15rem;
+            }
+
+            .weekday-header {
+                font-size: 0.55rem;
+                padding: 0.35rem 0.1rem;
+                letter-spacing: 0.25px;
+            }
+
+            .holiday-name {
+                font-size: 0.48rem;
+            }
+
+            .period-week-header,
+            .period-week-cell {
+                font-size: 0.5rem;
+                padding: 0.2rem 0.05rem;
+            }
+
+            .period-week-cell .period-num {
+                font-size: 0.5rem;
+            }
+
+            .period-week-cell .week-num {
+                font-size: 0.45rem;
+            }
+
+            .nav-button {
+                padding: 0.55rem 0.7rem;
+                font-size: 0.85rem;
+            }
+
+            .nav-info {
+                font-size: 0.95rem;
+            }
+
+            .legend {
+                grid-template-columns: 1fr;
+            }
+
+            .legend-item.clickable {
+                grid-column: 1;
+            }
+        }
+
+        /* Respect users who prefer reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            body::before {
+                animation: none;
             }
         }
     </style>
@@ -1557,6 +1831,39 @@
 
             // Initial render
             renderCalendar();
+
+            // Swipe gesture support for mobile (prev/next month)
+            const swipeTarget = document.getElementById('calendarContainer');
+            let touchStartX = null;
+            let touchStartY = null;
+            let touchStartTime = 0;
+
+            swipeTarget.addEventListener('touchstart', function(e) {
+                if (e.touches.length !== 1) {
+                    touchStartX = null;
+                    return;
+                }
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                touchStartTime = Date.now();
+            }, { passive: true });
+
+            swipeTarget.addEventListener('touchend', function(e) {
+                if (touchStartX === null) return;
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = e.changedTouches[0].clientY - touchStartY;
+                const dt = Date.now() - touchStartTime;
+                touchStartX = null;
+
+                // Require: mostly horizontal, >= 60px distance, < 700ms (so a tap isn't mis-read)
+                if (dt < 700 && Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                    if (dx < 0) {
+                        document.getElementById('nextBtn').click();
+                    } else {
+                        document.getElementById('prevBtn').click();
+                    }
+                }
+            }, { passive: true });
 
             // Show payday popup on initial page load
             setTimeout(showPaydayPopup, 500);
