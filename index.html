@@ -672,6 +672,14 @@
             opacity: 0.8;
         }
 
+        .popup-disclaimer {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 0.75rem;
+            opacity: 0.85;
+        }
+
         .popup-close {
             position: absolute;
             top: 10px;
@@ -1195,6 +1203,7 @@
         <div class="popup-days" id="popupDays">0</div>
         <div class="popup-label" id="popupLabel">days to go!</div>
         <div class="popup-date" id="popupDate">Payday: January 1, 2026</div>
+        <div class="popup-disclaimer">Applies to full-time employees only.</div>
     </div>
 
     <!-- Day Info Popup (shown when clicking a payday or holiday) -->
@@ -1617,7 +1626,7 @@
                     type: 'payday',
                     icon: '💰',
                     title: 'Payday',
-                    desc: `Pay for period ${formatDate(payPeriod.periodStart)} – ${formatDate(payPeriod.periodEnd)}`
+                    desc: `Pay for period ${formatDate(payPeriod.periodStart)} – ${formatDate(payPeriod.periodEnd)} (full-time employees only)`
                 });
             }
 
@@ -1627,7 +1636,7 @@
                     type: 'full-holiday',
                     icon: '🎉',
                     title: fullHoliday.name,
-                    desc: 'Full paid holiday — office closed'
+                    desc: 'Full paid holiday — office closed (paid for full-time employees only)'
                 });
             }
 
