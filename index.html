@@ -688,6 +688,108 @@
             color: var(--text-light);
         }
 
+        .day-info-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 31, 58, 0.98) 100%);
+            border: 3px solid var(--highlight);
+            border-radius: 20px;
+            padding: 2rem;
+            z-index: 1001;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(116, 185, 255, 0.25);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            min-width: 320px;
+            max-width: min(480px, calc(100vw - 2rem));
+            max-height: calc(100vh - 2rem);
+            overflow-y: auto;
+        }
+
+        .day-info-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .day-info-date {
+            font-family: 'Righteous', cursive;
+            font-size: 1.5rem;
+            color: var(--highlight);
+            margin-bottom: 1.25rem;
+            padding-right: 1.5rem;
+        }
+
+        .day-info-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .day-info-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid transparent;
+            text-align: left;
+        }
+
+        .day-info-item.payday {
+            background: linear-gradient(135deg, rgba(253, 203, 110, 0.18), rgba(255, 118, 117, 0.12));
+            border-color: var(--accent);
+        }
+
+        .day-info-item.full-holiday {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.12));
+            border-color: var(--holiday-full);
+        }
+
+        .day-info-item.half-holiday {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.2), rgba(142, 68, 173, 0.12));
+            border-color: var(--holiday-half);
+        }
+
+        .day-info-item.observance {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.18), rgba(108, 92, 231, 0.08));
+            border-color: var(--secondary);
+        }
+
+        .day-info-item.multi-day {
+            background: linear-gradient(135deg, rgba(0, 184, 148, 0.18), rgba(0, 145, 110, 0.08));
+            border-color: var(--primary);
+        }
+
+        .day-info-icon {
+            font-size: 2.25rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .day-info-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .day-info-title {
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 0.2rem;
+            line-height: 1.2;
+        }
+
+        .day-info-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
         .payday-arrow {
             position: absolute;
             top: -60px;
@@ -961,6 +1063,35 @@
             .payday-arrow {
                 display: none !important;
             }
+
+            .day-info-popup {
+                padding: 1.5rem 1.25rem;
+                width: calc(100vw - 2rem);
+                min-width: 0;
+                border-radius: 16px;
+            }
+
+            .day-info-date {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+            }
+
+            .day-info-item {
+                padding: 0.75rem;
+                gap: 0.75rem;
+            }
+
+            .day-info-icon {
+                font-size: 1.85rem;
+            }
+
+            .day-info-title {
+                font-size: 1rem;
+            }
+
+            .day-info-desc {
+                font-size: 0.8rem;
+            }
         }
 
         /* Very small phones (iPhone SE, etc.) */
@@ -1064,6 +1195,13 @@
         <div class="popup-days" id="popupDays">0</div>
         <div class="popup-label" id="popupLabel">days to go!</div>
         <div class="popup-date" id="popupDate">Payday: January 1, 2026</div>
+    </div>
+
+    <!-- Day Info Popup (shown when clicking a payday or holiday) -->
+    <div class="day-info-popup" id="dayInfoPopup">
+        <button class="popup-close" id="dayInfoClose">&times;</button>
+        <div class="day-info-date" id="dayInfoDate">-</div>
+        <div class="day-info-items" id="dayInfoItems"></div>
     </div>
 
     <div class="container">
@@ -1455,7 +1593,135 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 hidePaydayPopup();
+                hideDayInfoPopup();
             }
+        });
+
+        // --- Day Info Popup (click a payday/holiday to see what's going on) ---
+        function getPaydayPeriod(dateStr) {
+            return allPayPeriods.find(p => p.payDate === dateStr);
+        }
+
+        function formatDateLong(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return `${weekdays[d.getDay()]}, ${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+        }
+
+        function buildDayInfoItems(dateStr) {
+            const items = [];
+
+            const payPeriod = getPaydayPeriod(dateStr);
+            if (payPeriod) {
+                items.push({
+                    type: 'payday',
+                    icon: '💰',
+                    title: 'Payday',
+                    desc: `Pay for period ${formatDate(payPeriod.periodStart)} – ${formatDate(payPeriod.periodEnd)}`
+                });
+            }
+
+            const fullHoliday = getFullHoliday(dateStr);
+            if (fullHoliday) {
+                items.push({
+                    type: 'full-holiday',
+                    icon: '🎉',
+                    title: fullHoliday.name,
+                    desc: 'Full paid holiday — office closed'
+                });
+            }
+
+            const halfHoliday = getHalfHoliday(dateStr);
+            if (halfHoliday) {
+                items.push({
+                    type: 'half-holiday',
+                    icon: '🕐',
+                    title: halfHoliday.name,
+                    desc: 'Half day — early release'
+                });
+            }
+
+            const observance = getObservance(dateStr);
+            if (observance) {
+                items.push({
+                    type: 'observance',
+                    icon: '📅',
+                    title: observance.name,
+                    desc: 'Observance (not a day off)'
+                });
+            }
+
+            const multiDay = getMultiDayHoliday(dateStr);
+            if (multiDay) {
+                items.push({
+                    type: 'multi-day',
+                    icon: '🕊️',
+                    title: multiDay.name,
+                    desc: `Observed ${formatDate(multiDay.start)} – ${formatDate(multiDay.end)}`
+                });
+            }
+
+            return items;
+        }
+
+        function showDayInfoPopup(dateStr) {
+            const items = buildDayInfoItems(dateStr);
+            if (items.length === 0) return false;
+
+            const popup = document.getElementById('dayInfoPopup');
+            const dateEl = document.getElementById('dayInfoDate');
+            const itemsEl = document.getElementById('dayInfoItems');
+
+            dateEl.textContent = formatDateLong(dateStr);
+            itemsEl.innerHTML = '';
+
+            items.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = `day-info-item ${item.type}`;
+
+                const iconEl = document.createElement('div');
+                iconEl.className = 'day-info-icon';
+                iconEl.textContent = item.icon;
+
+                const textEl = document.createElement('div');
+                textEl.className = 'day-info-text';
+
+                const titleEl = document.createElement('div');
+                titleEl.className = 'day-info-title';
+                titleEl.textContent = item.title;
+
+                const descEl = document.createElement('div');
+                descEl.className = 'day-info-desc';
+                descEl.textContent = item.desc;
+
+                textEl.appendChild(titleEl);
+                textEl.appendChild(descEl);
+                itemEl.appendChild(iconEl);
+                itemEl.appendChild(textEl);
+                itemsEl.appendChild(itemEl);
+            });
+
+            hidePaydayPopup();
+            popup.classList.add('show');
+            return true;
+        }
+
+        function hideDayInfoPopup() {
+            document.getElementById('dayInfoPopup').classList.remove('show');
+        }
+
+        document.getElementById('dayInfoClose').addEventListener('click', function(e) {
+            e.stopPropagation();
+            hideDayInfoPopup();
+        });
+
+        // Click outside the popup (but not on another day cell) to close it
+        document.addEventListener('click', function(e) {
+            const popup = document.getElementById('dayInfoPopup');
+            if (!popup.classList.contains('show')) return;
+            if (popup.contains(e.target)) return;
+            if (e.target.closest('.day-cell')) return;
+            hideDayInfoPopup();
         });
 
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -1715,6 +1981,7 @@
                             if (clickedPeriod) {
                                 updateDisplay(clickedPeriod);
                             }
+                            showDayInfoPopup(dateStr);
                         });
 
                         const dayNumber = document.createElement('div');
